@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Salary Calculator</title>
+    <style>
+        .field{
+            margin-bottom: 5px;
+        }
+        label {
+            display: block;
+        }
+        #divResult{
+            font-size: 18pt;
+            font-weight: bold;
+            color : red;
+        }
+    </style>
+    <script src="jquery-1.11.2.js"></script>
+    <script>
+        function SalaryCalculator(){
+            var _data = {
+                basic : 0,
+                hra : 0,
+                da : 0,
+                tax : 0,
+                salary : 0
+            };
+            this.get = function(attrName){
+                return _data[attrName];
+            };
+            this.set = function(attrName, value){
+              _data[attrName] = value;
+                //trigger change notification
+                triggerChangeFor(attrName);
+            };
+            
+            var _eventHandlers = {};
+            this.addChangeListener = function(attrName, listenerFn){
+                _eventHandlers[attrName] = _eventHandlers[attrName] || [];
+                _eventHandlers[attrName].push(listenerFn);
+            };
+            
+            function triggerChangeFor(attrName){
+                var listenerFns = _eventHandlers[attrName] || [];
+                listenerFns.forEach(function(listenerFn){
+                    listenerFn();
+                });
+            }
+            
+        }
+        SalaryCalculator.prototype.calculate = function(){
+            var gross = this.get('basic') + this.get('hra') + this.get('da');
+            var net = gross * ((100-this.get('tax'))/100);
+            this.set('salary', net);
+        }
+        
+        
+    $(function(){
+        window.calculator = new SalaryCalculator();
+        
+        calculator.addChangeListener('salary', function(){
+            $("#divResult").html(calculator.get('salary'));
+        });
+        calculator.addChangeListener('basic', function(){
+            $("#txtBasic").val(calculator.get('basic'));
+        });
+        calculator.addChangeListener('hra', function(){
+            $("#txtHra").val(calculator.get('hra'));
+        });
+        calculator.addChangeListener('da', function(){
+            $("#txtDa").val(calculator.get('da'));
+        });
+        calculator.addChangeListener('tax', function(){
+            $("#rangeTax").val(calculator.get('tax'));
+            $("#spanTax").html(calculator.get('tax'));
+        });
+        
+        $("#txtBasic").change(function(){
+            calculator.set('basic', parseInt($("#txtBasic").val(),10));
+        });
+        $("#txtHra").change(function(){
+            calculator.set('hra', parseInt($("#txtHra").val(),10));
+            
+        });
+        $("#txtDa").change(function(){
+            calculator.set('da', parseInt($("#txtDa").val(),10));
+            
+        });
+        $("#rangeTax").change(function(){
+            calculator.set('tax', parseInt($("#rangeTax").val(),10));
+        });
+        $("#btnCalculate").click(function(){
+            calculator.calculate();
+        });
+        
+        $("#rangeTax").change(function(){
+            $("#spanTax").html(this.value);
+        });
+        
+    });
+    </script>
+</head>
+<body>
+    <h1>Salary Calculator</h1>
+    <hr>
+    <div class="content">
+        <div class="field"><label for="">Basic :</label><input type="text" name="" id="txtBasic"></div>
+        <div class="field"><label for="">HRA :</label><input type="text" name="" id="txtHra"></div>
+        <div class="field"><label for="">DA :</label><input type="text" name="" id="txtDa"></div>
+        <div class="field">
+            <label for="">Tax :</label>
+            <input type="range" name="" id="rangeTax" min="0" max="30" value="0">
+            <span id="spanTax">[Tax]</span>
+        </div>
+        <div class="field"><input type="button" value="Calculate" id="btnCalculate"></div>
+        <div class="field">
+            <div id="divResult">[Salary]</div>
+        </div>
+    </div>
+</body>
+</html>
