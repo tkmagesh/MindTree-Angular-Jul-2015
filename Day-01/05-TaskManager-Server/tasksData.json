@@ -1,0 +1,19 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "name": "Watch Bhahubali (s)",
+      "isCompleted": false
+    },
+    {
+      "id": 2,
+      "name": "Fix that bug (s)",
+      "isCompleted": true
+    },
+    {
+      "id": 3,
+      "name": "Learn angular better (s)",
+      "isCompleted": false
+    }
+  ]
+}

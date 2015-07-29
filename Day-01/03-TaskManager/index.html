@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task Manager</title>
+    <script>
+    /*
+    Use Cases
+    1. List the tasks - d0one
+    2. Add a new task - done
+    3. Toggle the completion status - done
+    4. Remove Completed tasks - done
+    5. Trim the task name - done
+    6. Display stats - done
+    7. Persist the tasks in the server
+    
+    */
+    </script>
+    <style>
+        .completed{
+            color : red;
+            text-decoration: line-through;
+            font-style: italic;
+            font-weight: bold;
+        }
+        .stat{
+            font-size: 16pt;
+            font-weight: bold;
+        }
+        .taskList li {
+            cursor: pointer;
+        }
+    </style>
+    <script src="angular.js"></script>
+    <script>
+        var taskManagerApp = angular.module("taskManagerApp", []);
+        
+        taskManagerApp.value("taskDefaults", {
+            name : '',
+            isCompleted : false
+        });
+        
+        
+        
+        taskManagerApp.factory("Task", function getTaskClass(taskDefaults){
+            function Task(defaults){
+                defaults = defaults || {};
+                this.name = defaults.name || taskDefaults.name;
+                this.isCompleted = defaults.isCompleted || taskDefaults.isCompleted;
+            }
+            Task.prototype.toggle = function(){
+                this.isCompleted = !this.isCompleted;
+            };
+            return Task;
+        });
+        
+        
+        
+        
+        taskManagerApp.controller("taskController", function($scope, Task){
+            
+            $scope.tasks = [
+                new Task({name : "Watch Bhahubali", isCompleted : false}),
+                new Task({name : "Fix that bug", isCompleted : true}),
+                new Task({name : "Learn angular better", isCompleted : false})
+            ];
+            
+            $scope.addNew = function(newTask){
+                var task = new Task({
+                    name : newTask,
+                    isCompleted : false
+                });
+                $scope.tasks.push(task);
+            };
+            
+            $scope.toggle = function(task){
+                //task.isCompleted = !task.isCompleted;
+                task.toggle();
+            };
+            
+            $scope.removeCompleted = function(){
+                for(var i=$scope.tasks.length -1 ; i >=0; i--){
+                    if ($scope.tasks[i].isCompleted)
+                        $scope.tasks.splice(i,1);
+                }
+            };
+            
+            
+            
+            
+            
+        });
+        
+        taskManagerApp.value("defaultTrimLength", 30);
+        
+        taskManagerApp.filter("trimName", function(defaultTrimLength){
+            return function(taskName){
+                return taskName.length < defaultTrimLength ? taskName : taskName.substr(0,defaultTrimLength) + "...";
+            }
+        });
+        
+        taskManagerApp.filter("closedCount", function($filter){
+            return function(tasks){
+                var filter = $filter('filter')
+                return filter(tasks, {isCompleted : true}).length;
+            }
+        });
+    </script>
+</head>
+<body ng-app="taskManagerApp">
+    <h1>Task Manager</h1>
+    <div class="content" ng-controller="taskController">
+        <div class="stat">
+            <span class="completed">{{ tasks | closedCount }}</span>
+             / 
+             <span>{{tasks.length}}</span>
+        </div>
+        <div class="list">
+            <label for="">Task :</label>
+            <input type="text" ng-model="newTask">
+            <input type="button" value="Add Task" ng-click="addNew(newTask)">
+            <input type="button" value="Remove Completed" ng-click="removeCompleted()">
+            <ol class="taskList">
+               <li  ng-repeat="task in tasks" ng-class="{completed : task.isCompleted}" ng-click="toggle(task)">{{task.name | trimName}}</li> 
+            </ol>
+        </div>
+    </div>
+</body>
+</html>
