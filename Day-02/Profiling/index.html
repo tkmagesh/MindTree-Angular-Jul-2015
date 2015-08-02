@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="angular.js"></script>
+    <script>
+    angular
+        .module("profileApp", [])
+        .factory("Employee", function(){
+            return function Employee(defaults){
+                this.id = defaults.id;
+                this.name = defaults.name;
+                this.salary = defaults.salary;
+
+            }
+            Employee.prototype.format = function(){
+                    this.summary = this.id + ", " + this.name + ", " + this.salary;
+                }
+        })
+        .controller("testController", function($scope, Employee){
+            $scope.employees = [];
+            $scope.doWork = function(){
+                for(var i=0; i<10000; i++)
+                    $scope.employees.push(new Employee({id : 100, name : 'Magesh', salary : 10000}));
+
+            };
+            $scope.createSummary = function(){
+                $scope.employees.forEach(function(employee){
+                    employee.format();
+                });
+            }
+        })
+    </script>
+</head>
+<body ng-app="profileApp" ng-controller="testController">
+    <input type="button" value="Do Work" ng-click="doWork()">
+    <input type="button" value="Create Summary" ng-click="createSummary()">
+    <div ng-bind="employees.length"></div>
+    <div ng-repeat="emp in employees">{{emp.summary}}</div>
+</body>
+</html>

@@ -91,6 +91,12 @@
             
         });
         
+        taskManagerApp.run(function($rootScope){
+            $rootScope.track = function(){
+                console.log("activity detected at " + new Date());
+            }
+        });
+
         taskManagerApp.value("defaultTrimLength", 30);
         
         taskManagerApp.filter("trimName", function(defaultTrimLength){
@@ -105,9 +111,10 @@
                 return filter(tasks, {isCompleted : true}).length;
             }
         });
+
     </script>
 </head>
-<body ng-app="taskManagerApp">
+<body ng-app="taskManagerApp" ng-keypress="track()">
     <h1>Task Manager</h1>
     <div class="content" ng-controller="taskController">
         <div class="stat">

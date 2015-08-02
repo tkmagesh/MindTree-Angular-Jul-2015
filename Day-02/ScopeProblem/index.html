@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .parent, .child{
+            border : 2px solid;
+            padding : 10px;
+            margin: 20px;
+        }
+        .parent{
+            border-color : blue;
+            background-color: lightblue;
+        }
+        .child{
+            border-color: red;
+            background-color: lightpink;
+        }
+    </style>
+    <script src="angular.js"></script>
+    <script>
+        angular.module("myApp", [])
+        .run(function($rootScope, $interval){
+            var lastDigestTime = new Date();
+            $rootScope.$watch(function(){
+                lastDigestTime = new Date();
+            });
+            $interval(function(){
+                var currentTime = new Date();
+                var delta = currentTime - lastDigestTime;
+                if (delta > 10000){
+                    $rootScope.msg = "User timedout!!";
+                }
+            },10000)
+
+        })
+        .controller("parentController", function($scope){
+            $scope.emp = {
+                name : "Magesh"
+            }
+        })
+        .controller("childController", function($scope){
+        })
+
+    </script>
+</head>
+<body ng-app="myApp">
+    <div>{{msg}}</div>
+    <div class="parent" ng-controller="parentController">
+        <label for="">Name :</label>
+        <input type="text" name="" id="" ng-model="emp.name">
+        <div>{{emp.name}}</div>
+        <div class="child" ng-controller="childController">
+            <label for="">Name :</label>
+            <input type="text" name="" id="" ng-model="emp.name">
+            <div>{{emp.name}}</div>
+        </div>
+    </div>
+</body>
+</html>
